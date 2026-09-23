@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | Migeji Enterprise</title>
+
+<style>
+  /*
+    Design tokens are kept as CSS custom properties so every color and
+    spacing value is defined once and reused consistently across the
+    page (labels, borders, buttons, error text, etc.).
+  */
+  :root {
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+    --color-text: #1f2937;
+    --color-muted: #6b7280;
+    --color-border: #d1d5db;
+    --color-error: #dc2626;
+    --color-success: #16a34a;
+    --color-bg: #f3f4f6;
+    --color-card: #ffffff;
+    --radius: 10px;
+    --spacing: 1rem;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    line-height: 1.5;
+  }
+
+  main {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .contact-card {
+    background: var(--color-card);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    padding: 2rem 2rem 1.5rem;
+  }
+
+  .contact-card h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.5rem;
+  }
+
+  .contact-card p.intro {
+    margin: 0 0 1.75rem;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  /* Every input/select/textarea sits in a .field wrapper so its label
+     and (possible) error message stay visually grouped and can be
+  targeted together with CSS sibling selectors below. */
+
+  .field {
+    position: relative;
+    margin-bottom: 1.35rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.35rem;
+  }
+
+  /* A small asterisk communicates "required" visually without relying
+  on color alone (color-blind / grayscale friendly). */
+
+  .required-marker {
+    color: var(--color-error);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--color-text);
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  /*
+    Validation styling: browsers automatically apply :valid / :invalid
+    to any field with a built-in HTML5 constraint (required, type=email,
+    pattern, etc.), with no JavaScript needed. We only want the red
+    "invalid" outline to appear once the visitor has actually typed
+    something -- not the instant the empty page loads -- so every rule
+    below is scoped with :not(:placeholder-shown), which stops matching
+    the moment a field has real content in it.
+  */
+
+  input:not(:placeholder-shown):invalid,
+  textarea:not(:placeholder-shown):invalid {
+    border-color: var(--color-error);
+  }
+
+  input:not(:placeholder-shown):valid,
+  textarea:not(:placeholder-shown):valid {
+    border-color: var(--color-success);
+  }
+
+  /* Custom, readable error text (instead of relying only on the
+     browser's default validation tooltip). It lives right after each
+  field in the HTML and is revealed purely by this CSS rule. */
+
+  .error-message {
+    display: none;
+    color: var(--color-error);
+    font-size: 0.82rem;
+    margin-top: 0.35rem;
+  }
+
+  input:not(:placeholder-shown):invalid ~ .error-message,
+  textarea:not(:placeholder-shown):invalid ~ .error-message {
+    display: block;
+  }
+
+  fieldset {
+    border: 1.5px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.85rem 1rem 1rem;
+    margin: 0 0 1.35rem;
+  }
+
+  legend {
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0 0.35rem;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+  }
+
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 400;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+
+  .radio-group input[type="radio"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-primary);
+  }
+
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-muted) 50%),
+      linear-gradient(135deg, var(--color-muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  .hint {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: background-color 0.15s ease, transform 0.05s ease;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-primary-dark);
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .btn-secondary:hover {
+    background: #eff6ff;
+  }
+
+  /* The preview panel starts hidden via the "hidden" attribute. It is
+     only revealed by the small script at the bottom of the page, and
+     only when the page has been reloaded with query-string data in
+  its URL -- i.e. right after the visitor clicks "Preview". */
+
+  .preview-panel {
+    background: #eff6ff;
+    border: 1.5px solid var(--color-primary);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .preview-panel h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  .preview-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .preview-panel li {
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #dbeafe;
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+
+  .preview-panel li:last-child {
+    border-bottom: none;
+  }
+</style>
+  </head>
+
+<body>
+<main>
+
+  <!--
+    Preview panel: hidden by default. When the visitor clicks "Preview",
+    the button's formmethod="get" (see the button further down) makes
+    the browser reload THIS SAME page with the form values attached to
+    the URL as ?name=...&email=... query parameters -- that is the GET
+    method doing its job with no server involved. The tiny script at
+    the end of the file then reads those parameters back out of the
+    URL and lists them here, and un-hides this panel.
+  -->
+
+  <section id="previewPanel" class="preview-panel" hidden>
+    <h2>Preview: this is what will be sent</h2>
+    <ul id="previewList"></ul>
+    <p class="hint">Notice the values above also now appear in the address bar &mdash; that is the GET method exposing the data in the URL, which is exactly why GET is used here for a harmless preview, and POST (below) is used for the real, private submission.</p>
+  </section>
+
+  <div class="contact-card">
+    <h1>Contact Us</h1>
+    <p class="intro">Have a question, an issue, or feedback? Fill out the form below and we'll get back to you.</p>
+
+    <!--
+      The form's own method/action is POST to a server endpoint, which
+      satisfies the assignment's requirement that the real submission
+      uses POST. httpbin.org/post is a public test endpoint that simply
+      echoes back whatever it receives as JSON, so the "Submit" button
+      below is genuinely testable.
+
+      novalidate is intentionally NOT set, so the browser's native
+      HTML5 constraint validation (required, type="email", pattern)
+      stays active for both buttons and blocks submission until every
+      rule below is satisfied.
+    -->
+    <form class="contact-form" action="https://httpbin.org/post" method="post">
+
+      <div class="field">
+        <label for="fullName">Name <span class="required-marker">*</span></label>
+        <input
+          type="text"
+          id="fullName"
+          name="fullName"
+          placeholder=" "
+          required
+          minlength="2">
+        <span class="error-message">Please enter your full name.</span>
+      </div>
+
+      <div class="field">
+        <label for="emailAddress">Email <span class="required-marker">*</span></label>
+        <input
+          type="email"
+          id="emailAddress"
+          name="emailAddress"
+          placeholder=" "
+          required>
+        <!-- type="email" alone gives us free, built-in format checking
+             (something@somewhere.tld) with zero JavaScript. -->
+
+        <span class="error-message">Please enter a valid email address, e.g. name@example.com.</span>
+      </div>
+
+      <div class="field">
+        <label for="phoneNumber">Phone Number <span class="required-marker">*</span></label>
+        <input
+          type="tel"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder=" "
+          required
+          pattern="[0-9]{10}"
+          inputmode="numeric"
+          maxlength="10">
+        <!-- pattern enforces exactly 10 digits, no spaces/dashes, which
+             is what the assignment specifically asks for. -->
+        <span class="error-message">Please enter exactly 10 digits, with no spaces or dashes (e.g. 0712345678).</span>
+      </div>
+
+      <div class="field">
+        <label for="message">Message <span class="required-marker">*</span></label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder=" "
+          required
+          minlength="10"></textarea>
+        <span class="error-message">Please enter a message (at least 10 characters).</span>
+      </div>
+
+    
+      <fieldset>
+        <legend>Preferred contact method <span class="required-marker">*</span></legend>
+        <div class="radio-group">
+          <label><input type="radio" name="preferredContactMethod" value="Email" required> Email</label>
+          <label><input type="radio" name="preferredContactMethod" value="Phone" required> Phone</label>
+          <label><input type="radio" name="preferredContactMethod" value="Both" required> Both</label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="inquiryType">Inquiry Type <span class="required-marker">*</span></label>
+        <select id="inquiryType" name="inquiryType" required>
+
+          <!-- The blank, disabled first option means "nothing chosen
+               yet" counts as invalid, forcing a deliberate choice. -->
+
+          <option value="" disabled selected>Select an inquiry type&hellip;</option>
+          <option value="General Inquiry">General Inquiry</option>
+          <option value="Support Request">Support Request</option>
+          <option value="Feedback">Feedback</option>
+        </select>
+      </div>
+
+      <div class="button-row">
+        <!--
+          formmethod="get" and formaction="" override the <form>'s own
+          POST/httpbin settings for this one button only, so clicking
+          "Preview" submits the very same field values via GET to this
+          same page instead. Native required/pattern validation still
+          runs first, so an incomplete or malformed entry blocks the
+          preview exactly like it blocks the real submission.
+        -->
+        <button type="submit" formmethod="get" formaction="" class="btn-secondary">Preview</button>
+        <button type="submit" class="btn-primary">Submit Message</button>
+      </div>
+            </form>
+
+  </div>
+</main>
+
+<script>
+  /*
+    This script has exactly one job: after a GET-based "Preview" reload,
+    read the values back out of the URL's query string and display them.
+    That step is unavoidable without JavaScript, because plain HTML/CSS
+    has no way to read the current URL.
+  */
+
+  // Maps each form field's "name" attribute to the label it should be
+  // shown under in the preview list, in the order they should appear.
+
+  const previewFieldLabels = {
+    fullName: "Name",
+    emailAddress: "Email",
+    phoneNumber: "Phone",
+    message: "Message",
+    preferredContactMethod: "Preferred contact method",
+    inquiryType: "Inquiry type"
+  };
+
+  // A hand-written query-string reader (rather than the newer
+  // URLSearchParams API) so the preview also works in older browsers.
+
+  function readSubmittedFieldsFromUrl() {
+    const submittedFields = {};
+    const rawQuery = window.location.search.replace(/^\?/, "");
+    if (!rawQuery) return submittedFields;
+
+    rawQuery.split("&").forEach((pair) => {
+      if (!pair) return;
+      const [rawKey, rawValue] = pair.split("=");
+      const key = decodeURIComponent((rawKey || "").replace(/\+/g, " "));
+      const value = decodeURIComponent((rawValue || "").replace(/\+/g, " "));
+      submittedFields[key] = value;
+    });
+    return submittedFields;
+  }
+
+  // Re-fills the visible form with whatever was carried in the query
+  // string, so previewing doesn't force the visitor to retype everything
+  // before they can hit the real "Submit Message" button.
+
+  function restoreFormValues(submittedFields) {
+    Object.keys(submittedFields).forEach((fieldName) => {
+      const fieldValue = submittedFields[fieldName];
+
+      if (fieldName === "preferredContactMethod") {
+  const radioButtons = document.querySelectorAll('input[name="preferredContactMethod"]');
+
+        // Array.prototype.forEach.call (rather than radioButtons.forEach)
+        // keeps this working even in older browsers whose NodeList does
+  // not implement forEach directly.
+
+        Array.prototype.forEach.call(radioButtons, (radioButton) => {
+          radioButton.checked = radioButton.value === fieldValue;
+        });
+        return;
+      }
+
+      const matchingField = document.getElementsByName(fieldName)[0];
+      if (matchingField) matchingField.value = fieldValue;
+    });
+  }
+
+  // Builds the human-readable "Preview: this is what will be sent" list.
+
+  function renderPreviewList(submittedFields) {
+    const previewList = document.getElementById("previewList");
+    previewList.innerHTML = "";
+
+    Object.keys(previewFieldLabels).forEach((fieldName) => {
+      const value = submittedFields[fieldName];
+      if (!value) return;
+
+      const listItem = document.createElement("li");
+      const labelStrong = document.createElement("strong");
+      labelStrong.textContent = previewFieldLabels[fieldName] + ": ";
+      listItem.appendChild(labelStrong);
+      listItem.appendChild(document.createTextNode(value));
+      previewList.appendChild(listItem);
+    });
+
+    document.getElementById("previewPanel").hidden = false;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const submittedFields = readSubmittedFieldsFromUrl();
+    if (Object.keys(submittedFields).length === 0) {
+      return; // A normal, first-time visit -- nothing to preview yet.
+    }
+    restoreFormValues(submittedFields);
+    renderPreviewList(submittedFields);
+  });
+        </script>
+
+</body>
+</html>
